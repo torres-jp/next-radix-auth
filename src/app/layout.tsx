@@ -4,6 +4,7 @@ import { Theme } from '@radix-ui/themes'
 import './globals.css'
 import '@radix-ui/themes/styles.css'
 import Navbar from '@/components/Navbar'
+import ContextProvider from '@/context/GlobalContext'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,10 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Theme appearance='dark'>
-          <Navbar />
-          {children}
-        </Theme>
+        <ContextProvider>
+          <Theme appearance='dark'>
+            <Navbar />
+            {children}
+          </Theme>
+        </ContextProvider>
       </body>
     </html>
   )
