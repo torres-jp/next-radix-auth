@@ -10,6 +10,7 @@ import {
   Text,
 } from '@radix-ui/themes'
 import { useForm, Controller } from 'react-hook-form'
+import axios from 'axios'
 
 function TaskNewPage() {
   const {
@@ -23,8 +24,9 @@ function TaskNewPage() {
     },
   })
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data)
+  const onSubmit = handleSubmit(async (data) => {
+    const res = await axios.post(`/api/projects`, data)
+    console.log(res)
   })
 
   return (
