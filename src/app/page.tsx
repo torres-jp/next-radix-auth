@@ -4,5 +4,5 @@ function HomePage() {
 
 export default HomePage
 
-//02:24:00
+//02:32:00
 //https://www.youtube.com/watch?v=qOAUm_rAE-E&t=5272s

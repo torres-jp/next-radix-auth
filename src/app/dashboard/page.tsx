@@ -1,18 +1,30 @@
-'use client'
-import { Button, Container, Heading } from '@radix-ui/themes'
-import { useRouter } from 'next/navigation'
+import HeaderDashboard from '@/components/dashboard/HeaderDashboard'
+import prisma from '@/libs/prisma'
+import { Card, Container, Grid, Heading, Text } from '@radix-ui/themes'
 
-function DashboardPage() {
-  const router = useRouter()
+async function loadProject() {
+  return await prisma.project.findMany()
+}
+
+async function DashboardPage() {
+  const projects = await loadProject()
+  console.log(projects)
 
   return (
     <Container className='mt-10'>
-      <div className='flex justify-between'>
-        <Heading>Tasks</Heading>
-        <Button onClick={() => router.push('/dashboard/tasks/new')}>
-          Add Task
-        </Button>
-      </div>
+      <HeaderDashboard />
+
+      <Grid columns='3' gap='4'>
+        {projects.map((project) => (
+          <Card
+            key={project.id}
+            className='hover:cursor-pointer hover:opacity-75'
+          >
+            <Heading>{project.title}</Heading>
+            <Text className='text-slate-500'>{project.description}</Text>
+          </Card>
+        ))}
+      </Grid>
     </Container>
   )
 }

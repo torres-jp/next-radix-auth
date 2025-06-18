@@ -11,6 +11,7 @@ import {
 } from '@radix-ui/themes'
 import { useForm, Controller } from 'react-hook-form'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 function TaskNewPage() {
   const {
@@ -24,9 +25,14 @@ function TaskNewPage() {
     },
   })
 
+  const router = useRouter()
+
   const onSubmit = handleSubmit(async (data) => {
     const res = await axios.post(`/api/projects`, data)
-    console.log(res)
+
+    if (res.status === 201) {
+      router.push(`/dashboard`)
+    }
   })
 
   return (
