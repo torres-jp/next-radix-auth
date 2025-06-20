@@ -1,13 +1,21 @@
-import HeaderDashboard from '@/components/dashboard/HeaderDashboard'
 import prisma from '@/libs/prisma'
-import { Card, Container, Grid, Heading, Text } from '@radix-ui/themes'
+import { Container, Grid } from '@radix-ui/themes'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../api/auth/[...nextauth]/route'
+import ProjectCard from '@/components/projects/ProjectCard'
+import HeaderDashboard from '@/components/dashboard/HeaderDashboard'
 
-async function loadProject() {
-  return await prisma.project.findMany()
+async function loadProject(userId: number) {
+  return await prisma.project.findMany({
+    where: {
+      userId,
+    },
+  })
 }
 
 async function DashboardPage() {
-  const projects = await loadProject()
+  const session = await getServerSession(authOptions)
+  const projects = await loadProject(parseInt(session?.user.id as string))
   console.log(projects)
 
   return (
@@ -16,13 +24,7 @@ async function DashboardPage() {
 
       <Grid columns='3' gap='4'>
         {projects.map((project) => (
-          <Card
-            key={project.id}
-            className='hover:cursor-pointer hover:opacity-75'
-          >
-            <Heading>{project.title}</Heading>
-            <Text className='text-slate-500'>{project.description}</Text>
-          </Card>
+          <ProjectCard project={project} key={project.id} />
         ))}
       </Grid>
     </Container>

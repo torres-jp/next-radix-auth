@@ -11,7 +11,8 @@ import {
 } from '@radix-ui/themes'
 import { useForm, Controller } from 'react-hook-form'
 import axios from 'axios'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
+import { TrashIcon } from '@radix-ui/react-icons'
 
 function TaskNewPage() {
   const {
@@ -25,13 +26,26 @@ function TaskNewPage() {
     },
   })
 
+  const handleDelete = async (projectId: string) => {
+    const res = await axios.delete(`/api/projects/${projectId}`)
+
+    if (res.status === 200) {
+      router.push(`/dashboard`)
+    }
+  }
+
   const router = useRouter()
+  const params = useParams() as { projectId: string }
 
   const onSubmit = handleSubmit(async (data) => {
-    const res = await axios.post(`/api/projects`, data)
+    if (!params.projectId) {
+      const res = await axios.post(`/api/projects`, data)
 
-    if (res.status === 201) {
-      router.push(`/dashboard`)
+      if (res.status === 201) {
+        router.push(`/dashboard`)
+      }
+    } else {
+      console.log('updating....')
     }
   })
 
@@ -41,7 +55,9 @@ function TaskNewPage() {
         <Flex className='h-screen w-full  items-center'>
           <Card className='w-full p-7'>
             <form className='flex flex-col gap-y-2' onSubmit={onSubmit}>
-              <Heading>Create Project</Heading>
+              <Heading>
+                {params.projectId ? 'Edit Project' : 'Create Project'}
+              </Heading>
               <label htmlFor='title'>Project Title</label>
               <Controller
                 name='title'
@@ -97,9 +113,20 @@ function TaskNewPage() {
               )}
 
               <Button type='submit' mt='3'>
-                Create
+                {params.projectId ? 'Update Project' : 'Create Project'}
               </Button>
             </form>
+            <div className='flex justify-end my-4 '>
+              {params.projectId && (
+                <Button
+                  color='red'
+                  onClick={() => handleDelete(params.projectId)}
+                >
+                  <TrashIcon />
+                  Delete Project
+                </Button>
+              )}
+            </div>
           </Card>
         </Flex>
       </Container>
