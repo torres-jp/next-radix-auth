@@ -13,12 +13,15 @@ import { useForm, Controller } from 'react-hook-form'
 import axios from 'axios'
 import { useRouter, useParams } from 'next/navigation'
 import { TrashIcon } from '@radix-ui/react-icons'
+import { toast } from 'sonner'
+import { useEffect } from 'react'
 
 function TaskNewPage() {
   const {
     handleSubmit,
     control,
     formState: { errors },
+    setValue,
   } = useForm({
     values: {
       title: '',
@@ -30,8 +33,10 @@ function TaskNewPage() {
     const res = await axios.delete(`/api/projects/${projectId}`)
 
     if (res.status === 200) {
-      router.push(`/dashboard`)
+      toast.success('Project deleted successfully')
     }
+    router.push(`/dashboard`)
+    router.refresh()
   }
 
   const router = useRouter()
@@ -43,11 +48,26 @@ function TaskNewPage() {
 
       if (res.status === 201) {
         router.push(`/dashboard`)
+        router.refresh()
       }
     } else {
-      console.log('updating....')
+      const res = await axios.put(`/api/projects/${params.projectId}`, data)
+
+      if (res.status === 200) {
+        router.push(`/dashboard`)
+        router.refresh()
+      }
     }
   })
+
+  useEffect(() => {
+    if (params.projectId) {
+      axios.get(`/api/projects/${params.projectId}`).then((res) => {
+        setValue('title', res.data.title)
+        setValue('description', res.data.description)
+      })
+    }
+  }, [])
 
   return (
     <div>
